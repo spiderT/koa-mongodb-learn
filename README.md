@@ -29,3 +29,34 @@ sudo mkdir -p /data/db  这一步，在mac的catalina系统上会报错，mkdir:
 
 
 ## 2. CRUD
+
+### 2.1. Inserting Documents
+
+```js
+const insertDocuments = function (db, data) {
+  const collection = db.collection("msgs");
+  // Insert some documents
+  collection.insertOne(data, function (err, result) {
+    console.log("Inserted success");
+  });
+};
+
+
+
+router.post("/addmsg", (ctx, next) => {
+    const body = ctx.request.body;
+    console.log('ctx.request.body',  ctx.request.body);
+
+    insertDocuments(db, body);
+  });
+
+
+```
+
+curl post 请求
+
+```text
+curl localhost:1234/addmsg -X POST -d '{"type": 2,"content": "你好","fromId": "me","toId": "zhizhuxia","id": 1234}'
+```
+
+### 2.2. 
