@@ -53,10 +53,18 @@ router.post("/addmsg", (ctx, next) => {
 
 ```
 
-curl post 请求
+curl post 请求   
+
+用 -X POST 来申明我们的请求方法，用 -d 参数，来传送我们的参数。  
 
 ```text
-curl localhost:1234/addmsg -X POST -d '{"type": 2,"content": "你好","fromId": "me","toId": "zhizhuxia","id": 1234}'
+curl localhost:1234/addmsg -X POST -d "title=comewords&content=articleContent"
+```
+
+一般我们的接口都是 json 格式的 -H 参数来申明请求的 header  
+
+```text
+curl localhost:1234/addmsg -X POST  -H "Content-Type:application/json"  -d '{"type": 1,"content": "你好","fromId": "me","toId": "zhizhuxia","id": 1234}'
 ```
 
 ### 2.2. 

@@ -5,11 +5,11 @@ const app = new Koa();
 const Router = require("koa-router");
 const router = new Router();
 const koaBody = require("koa-body");
-const cors = require('@koa/cors');
+const cors = require("@koa/cors");
 
 app.use(koaBody());
+app.use(cors());
 app.use(router.routes());
-
 
 // Connection URL
 const url = "mongodb://localhost:27017";
@@ -21,50 +21,42 @@ const client = new MongoClient(url, {
   useUnifiedTopology: true,
 });
 
-const insertDocuments = function (db, data) {
+const insertDocuments = (db, data) => {
   const collection = db.collection("msgs");
   // Insert some documents
-  collection.insertOne(data, function (err, result) {
+  collection.insertOne(data, (err, result) => {
     console.log("Inserted success");
   });
 };
 
-const findDocuments = function (db) {
+const findDocuments = (db) => {
   const collection = db.collection("msgs");
   // Find some documents
-  return collection.find({}).toArray(function (err, docs) {
-    console.log(docs);
-    return docs;
-  });
+  return new Promise(function (resolve,reject) {
+    collection.find({}).toArray((err, docs) => {
+      if (err) throw err;
+      resolve(docs);
+    });
+  })
+
 };
 
 // Use connect method to connect to the server
-client.connect(function (err) {
+client.connect((err) => {
   console.log("Connected successfully to server");
 
   const db = client.db(dbName);
 
-  const data = {
-    type: 2,
-    content: "你好，我是蜘蛛侠",
-    fromId: "zhizhuxia",
-    toId: "me",
-    id: 111,
-  };
-
-  router.get("/allmsgs", (ctx, next) => {
-    ctx.body = findDocuments(db);
+  router.get("/allmsgs", async (ctx, next) => {
+    const data = await findDocuments(db);
+    ctx.body = data;
   });
 
   router.post("/addmsg", (ctx, next) => {
     const body = ctx.request.body;
-    console.log('ctx.request.body',  ctx.request.body);
-
-    insertDocuments(db, body);
+    await insertDocuments(db, body);
+    ctx.body = 'success';
   });
 });
-
-
-
 
 app.listen(1234);
