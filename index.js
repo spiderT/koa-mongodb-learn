@@ -32,13 +32,20 @@ const insertDocuments = (db, data) => {
 const findDocuments = (db) => {
   const collection = db.collection("msgs");
   // Find some documents
-  return new Promise(function (resolve,reject) {
+  return new Promise(function (resolve, reject) {
     collection.find({}).toArray((err, docs) => {
       if (err) throw err;
       resolve(docs);
     });
-  })
+  });
+};
 
+// 删除所有数据
+const removeAllData = (db) => {
+  const collection = db.collection("msgs");
+  collection.remove({}, {}, (err, r) => {
+    console.log("remove success");
+  });
 };
 
 // Use connect method to connect to the server
@@ -50,12 +57,20 @@ client.connect((err) => {
   router.get("/allmsgs", async (ctx, next) => {
     const data = await findDocuments(db);
     ctx.body = data;
+    console.log("get");
   });
 
-  router.post("/addmsg", (ctx, next) => {
+  router.post("/addmsg", async (ctx, next) => {
     const body = ctx.request.body;
+    console.log("body", body);
     await insertDocuments(db, body);
-    ctx.body = 'success';
+    ctx.body = "success";
+  });
+
+  router.delete("/clearmsgs", async (ctx, next) => {
+    const data = await removeAllData(db);
+    ctx.body = "success";
+    console.log("clearmsgs");
   });
 });
 
